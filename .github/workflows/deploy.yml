@@ -4,7 +4,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # Позволяет собрать и опубликовать вручную: Actions → Deploy to GitHub Pages → Run workflow
+  # Позволяет собрать и опубликовать вручную: Actions → Run workflow
   workflow_dispatch:
 
 permissions:
@@ -19,23 +19,32 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Явно ubuntu-24.04: метка ubuntu-latest мигрирует на Ubuntu 26
+    # 19 октября 2026 и может принести неожиданные изменения
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
+      - name: Окружение
+        run: |
+          node -v
+          npm -v
+
       - name: Установить зависимости
         run: npm ci
 
-      # Тесты геометрии и подбора — ломающие изменения не попадут в Pages
-      - name: Проверить типы и тесты
-        run: |
-          npm run typecheck
-          npm test
+      # Типы и тесты — отдельными шагами: так при сбое сразу видно,
+      # что именно упало, а не «exit code 1» на общем шаге
+      - name: Проверить типы
+        run: npm run typecheck
+
+      - name: Тесты
+        run: npm test
 
       - name: Собрать
         run: npm run build
@@ -48,7 +57,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
