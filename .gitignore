@@ -1,0 +1,11 @@
+node_modules/
+dist/
+
+# Собранные для тестов модули
+verify/*.mjs
+!verify/*.test.mjs
+
+*.log
+.DS_Store
+.vscode/
+.idea/
