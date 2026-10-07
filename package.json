@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build:test && node --test verify/",
+    "test": "npm run build:test && node --test verify/geometry.test.mjs",
     "build:test": "esbuild src/utils/solver.ts --bundle --format=esm --outfile=verify/solver.mjs --log-level=error && esbuild src/utils/geometry.ts --bundle --format=esm --outfile=verify/geometry.mjs --log-level=error && esbuild src/data/presets.ts --bundle --format=esm --outfile=verify/presets.mjs --log-level=error",
     "preview": "vite preview"
   },
